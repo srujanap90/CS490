@@ -60,4 +60,6 @@ Before move or rename:
 ----
 
 ::
-    $pip3 freeze > requirements.txt
+    $ pip3 freeze > requirements.txt
+    manually add Blueprint to requirements: Flask-Blueprint==1.3.0
+    delete the path comment 
