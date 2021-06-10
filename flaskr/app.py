@@ -19,12 +19,11 @@ from flaskr import db
 db.init_app(app)
 
 # apply the blueprints to the app
-from flaskr import auth, blog
-# from flaskr import chat
+from flaskr import auth, blog, chat
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(blog.bp)
-# app.register_blueprint(chat.bp)
+app.register_blueprint(chat.bp)
 
 
 # make url_for('index') == url_for('blog.index')
