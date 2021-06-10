@@ -11,6 +11,7 @@ certifi==2021.5.30
 cffi==1.14.5
 chardet==4.0.0
 click==6.7
+coverage==5.3
 cryptography==3.4.7
 ddtrace==0.49.2
 distlib==0.3.1
@@ -27,6 +28,7 @@ Flask-Auth==0.85
 Flask-BabelEx==0.9.4
 Flask-Bcrypt==0.7.1
 Flask-Bootstrap==3.3.7.1
+Flask-Blueprint==0.7
 Flask-DB==0.3.2
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
