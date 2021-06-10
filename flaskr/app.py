@@ -19,7 +19,7 @@ from flaskr import db
 db.init_app(app)
 
 # apply the blueprints to the app
-from flaskr import auth, blog,chat
+from flaskr import auth, blog
 # from flaskr import chat
 
 app.register_blueprint(auth.bp)

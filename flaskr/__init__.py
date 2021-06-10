@@ -37,11 +37,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from flaskr import auth, blog,chat
+    from flaskr import auth, blog
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(blog.bp)
-    app.register_blueprint(chat.bp)
+    # app.register_blueprint(chat.bp)
 
 
     
