@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  
+
+<!-- chat! -->
+  <div class="container">
+    <h1 class="title">Chat App</h1>
+    <h3>{{msg}}</h3>
+    <form action="/chat">
+
+        <p>I want to talk to: </p>
+        <input type="text" name="getter" placeholder="to whom">
+        
+        <!-- <div>
+            <input type="text" name="room" placeholder="Room ID">
+        </div> -->
+
+        <button type="submit">Enter</button>
+        
+    </form>
+</div>
+
+
+
+{% endblock %}
+
+{% block content %}
+<!-- <a class="action" href="{{ url_for('blog.create') }}">welcome</a> -->
+{% endblock %}

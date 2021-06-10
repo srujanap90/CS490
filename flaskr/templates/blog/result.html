@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Search Result for "{{word}}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h2>total {{posts|length}} posts: </h2>
+{{msg['posts']}}
+{%for post in posts %}
+
+<a href="{{ url_for('blog.post', id=post['id'],dir=0) }}">{{  post['title']  }}</a>
+{% endfor %}
+
+<h2>total {{users|length}} users: </h2>
+{{msg['users']}}
+{% for user in users %}
+<a>{{user['username']}}</a>
+
+{% endfor %}
+<hr>
+<a href="{{ url_for('blog.posts',offset=0) }}">back</a>
+
+{% endblock %}

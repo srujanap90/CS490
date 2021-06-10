@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}HomePage{% endblock %}</h1>
+  <a href="{{url_for('blog.posts',offset=0)}}">See new post!!</a>
+
+<!-- chat! -->
+  
+
+
+
+{% endblock %}
+
+{% block content %}
+<!-- <a class="action" href="{{ url_for('blog.create') }}">welcome</a> -->
+{% endblock %}

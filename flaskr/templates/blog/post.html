@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+  <h1><a href="{{url_for('blog.post',id =post['id'],dir=0)}}">{% block title %}Post | {{post ['title']}}{% endblock %}</a></h1>
+  <a href="{{url_for('blog.posts',offset=0)}}">Back to posts</a>
+{% endblock %}
+
+  {% block content %}
+  
+    
+    <article class="post">
+      <header>
+        <div>
+          <h1>{{ post['title'] }}</h1>
+          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
+        </div>
+        {% if g.user['id'] == post['author_id'] %}
+          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+        {% endif %}
+        
+      </header>
+
+        {%if post['img_url'] %}
+        <img src="{{post['img_url']}}" class="post-image"  alt="the image from post {{ post['title'] }} ">
+        {%else%}
+        <img src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png "  class="post-image" style="width:300px;"  alt="the image from post {{ post['title'] }} ">
+          {%endif%}
+        <hr>
+        {%if post['body']%}
+        <p class="body">{{ post['body'] }}</p>
+        <hr>
+        {%endif%}
+      </article>
+     
+      <td><a href="{{ url_for('blog.post', id=post['id']-1,dir=2)}}">previous post |</a></td>
+      <td><a href="{{ url_for('blog.post', id=post['id']+1,dir=1 )}}">next post</a></td>
+      <br>
+
+
+      <!-- comment section -->
+      <BUTTON ONCLICK="ShowAndHide()">Leave Your Comment</BUTTON> 
+      <DIV ID="commentbox" STYLE="display:none"> 
+        <hr>
+        <form action="{{ url_for('blog.comment', id=post['id'],user=g.user['id']) }}" method="post">
+          <label for="body">Leave Your Comment:</label>
+          <textarea name="commentbody" id="body" autofocus>{{ request.form['commentbody'] }}</textarea>
+          <div class="row">
+            <div class="col-sm-3">
+              <input type="submit" value="Save">
+            </div>
+            <div class="col-sm-7"></div>
+            <div class="col-sm-2"><a href="{{url_for('blog.post',id =post['id'],dir=0)}}">Cancel</a></div>
+          </div>
+        </form>
+        </DIV>
+      <!-- display post comment -->
+            
+      <article class="comment" ID="commentthread">
+        <header>
+          <h5>comments</h5>
+          {% if comments != None %}
+            {%for comment in comments %}
+            <div class="commentheader"> <b> {{ comment['username'] }} said: </b></div>
+            <br>
+            </header>
+              {% if comment['retweet_id'] %}
+                {%for oldcomment in comments%}
+                  {% if oldcomment['id']==comment['retweet_id']%}
+                    <p><i>reply to: {{oldcomment['username']}} said on {{oldcomment['created'].strftime('%Y-%m-%d-%H:%M:%S')}}</i></p>
+                    <p><i> "{{oldcomment['body']}}"</i></p>
+                    <hr>
+                  {%endif%}
+                {%endfor%}
+              {%endif%}
+              <p class="body">{{ comment['body'] }}</p>
+              <div class="commentend">on {{ comment['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
+              <!-- edit buton -->
+              {% if g.user['id'] == comment['author_id'] %}
+                <BUTTON ONCLICK="ShowAndHide1({{comment['id']}})">edit</BUTTON>
+                  <DIV ID="commentboxedit{{comment['id']}}" STYLE="display:none">
+                    <hr>
+                    <form action="{{ url_for('blog.commentupdate', id=post['id'],user=g.user['id'],cid=comment['id']) }}" method="post">
+                      <textarea name="commentbodyup" id="body" autofocus>{{ comment['body'] or request.form['commentbodyup'] }}</textarea>
+                      <div class="row">
+                        <div class="col-sm-3">
+                          <input type="submit" value="Save">
+                        </div>
+                      </div>
+                    </form>
+                    <form action="{{ url_for('blog.commentdelete', id=post['id'],cid=comment['id']) }}" method="post">
+                      <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+                    </form>
+                    <a href="{{url_for('blog.post',id =post['id'],dir=0)}}">Cancel</a>
+                    </DIV>
+              {% endif %} 
+                <!-- retweet -->
+              <BUTTON ONCLICK="ShowAndHide2({{comment['id']}})">reply</BUTTON>
+                  <DIV ID="commentboxretweet{{comment['id']}}" STYLE="display:none">
+                    <hr>
+                    <p><i>{{g.user['username']}} said: {{comment['body']}}</i></p>
+                    <hr>
+                    <form action="{{ url_for('blog.commentretweet', id=post['id'],user=g.user['id'],rid=comment['id']) }}" method="post">
+                      <textarea name="commentboxretweet" id="body" autofocus>{{ request.form['commentboxretweet'] }}</textarea>
+                
+                          <input type="submit" value="Save">
+           
+                    </form>
+                    <a href="{{url_for('blog.post',id =post['id'],dir=0)}}">Cancel</a>
+                    </DIV>
+
+                    
+              {% if not loop.last %}
+                <hr>
+              {% endif %}
+            {%endfor%}
+          {%endif%}
+      </article>
+  <!-- hidden comment box -->
+  <SCRIPT>
+    function ShowAndHide() {
+        var x = document.getElementById('commentbox');
+        if (x.style.display == 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    }
+    function ShowAndHide1(i) {
+        var x = document.getElementById('commentboxedit'+i);
+        if (x.style.display == 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    }
+    function ShowAndHide2(i) {
+        var x = document.getElementById('commentboxretweet'+i);
+        if (x.style.display == 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    }
+    </SCRIPT>
+
+
+
+{% endblock %}
