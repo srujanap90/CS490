@@ -23,7 +23,7 @@ from flaskr import auth, blog
 
 app.register_blueprint(auth.bp)
 app.register_blueprint(blog.bp)
-# app.register_blueprint(chat.bp)
+
 
 
 # make url_for('index') == url_for('blog.index')

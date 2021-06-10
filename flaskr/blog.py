@@ -323,3 +323,25 @@ def search():
     return render_template("blog/search.html")
 
 
+@bp.route("/<int:id>/profile", methods=("POST","GET"))
+@login_required
+def profile(id):
+    db = get_db()
+    msg=""
+
+    user = db.execute(
+                "SELECT *"
+                " FROM user "
+                " WHERE user.id =?", 
+                (id,),
+                ).fetchone()
+    posts=db.execute(
+                 "SELECT p.id, title, body, created, img_url, author_id, username"
+                " FROM post p JOIN user u ON p.author_id = u.id"
+                " WHERE u.id=? ", 
+                (id,),
+                ).fetchall()
+    if len(user)==0:
+        msg="no such a user, please try again."
+    else:
+        return render_template("blog/profile.html",user=user,posts=posts,msg=msg)

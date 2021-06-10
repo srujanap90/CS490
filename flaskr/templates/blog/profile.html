@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Public Profile "{{user['username']}}" {% endblock %}</h1>
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h2>Profile page</h2>
+  {% if user %}
+  <h2 class="profilename">User: {{user['username']}}</h2>
+  {% for post in posts %}
+  <a href="{{ url_for('blog.post', id=post['id'],dir=0) }}">{{  post['title']  }}</a>
+  <p>by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</p>
+  {% endfor %}  
+  {% else %}
+    <h2>{{msg}}</h2>
+  
+  {% endif %}
+
+
+</div>
+{% endblock %}
