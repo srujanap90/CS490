@@ -48,8 +48,8 @@ def posts(offset):
 def post(id,dir):
     """Show the post details"""
     db = get_db()
-    count=len(db.execute("SELECT * FROM post").fetchall())
-   
+    # count=len(db.execute("SELECT * FROM post").fetchall())
+    max=db.execute("SELECT MAX(id) FROM post").fetchone()['MAX(id)']
   
     post1 = db.execute(
         "SELECT p.id, title, body, created, img_url, author_id, username"
@@ -57,9 +57,9 @@ def post(id,dir):
         " WHERE p.id = ? ", 
         (id,),
         ).fetchone()
-    
+   
     while post1 is None: #if cant find the post id(maybe it's deleted or out of range)
-        if id>count or id<1: #if it is out of range:
+        if id>max or id<1: #if it is out of range:
             return render_template("blog/nopost.html")
         #if it is deleted, loop until find next one in the direction
         elif dir==2: #2: go back 
@@ -67,7 +67,7 @@ def post(id,dir):
         elif dir==1:#1: go next
             id=id+1
         post1 = db.execute(
-            "SELECT p.id, title, body, created, author_id, username"
+            "SELECT p.id, title, body, created, img_url, author_id, username"
             " FROM post p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ? ", 
             (id,),
