@@ -14,7 +14,7 @@
     <label for="img_url">attack your nice photo!</label>
     <input name="img_url" id="img_url" value="{{ request.form['img_url'] }}" >
     <input type="submit" value="Save">
-    <a href="posts">Cancel</a>
+    <a href="{{ url_for('blog.posts', offset=0) }}">Cancel</a>
   </form>
 </div>
 {% endblock %}

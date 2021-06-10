@@ -80,7 +80,7 @@ def post(id,dir):
         "SELECT c.id, c.post_id,c.body, c.created, c.author_id, c.retweet_id,u.username"
         " FROM comments c "
         " LEFT JOIN post p ON c.post_id = p.id"
-        " LEFT JOIN user u ON p.author_id = u.id"
+        " LEFT JOIN user u ON c.author_id = u.id"
         " WHERE c.post_id = ? ORDER BY c.created DESC", 
         (id,),
         ).fetchall()
