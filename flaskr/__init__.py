@@ -12,7 +12,10 @@ def create_app(test_config=None):
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, "flaskr.sqlite"),
     )
-
+    UPLOAD_FOLDER = './static/upload/'
+    ALLOWED_EXTENSIONS = set([ 'png', 'jpg', 'jpeg', 'gif'])
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
     if test_config is None:
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile("config.py", silent=True)

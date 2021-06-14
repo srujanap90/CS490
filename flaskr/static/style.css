@@ -26,20 +26,27 @@ hr {
 
 nav {
   /* background: lightgray; */
+
   display: flex;
   align-items: center;
   padding: 0 0.5rem;
+ 
 }
 
+.navbar{
+  border: 1px solid lightgray;
+  
+}
 nav h1 {
   flex: auto;
   margin: 0;
-
+  padding-left: 1rem;
+  font-family:sans-serif;
 }
 
 nav h1 a {
   text-decoration: none;
-  padding: 0.25rem 0.5rem;
+  /* padding: 0.25rem 0.5rem; */
 }
 
 nav ul  {
@@ -47,6 +54,7 @@ nav ul  {
   list-style: none;
   margin: 0;
   padding: 0;
+
 }
 
 nav ul li a, nav ul li span, header .action {
@@ -60,7 +68,7 @@ nav ul li a, nav ul li span, header .action {
 }
 
 .content > header {
-  border-bottom: 1px solid lightgray;
+  /* border-bottom: 1px solid lightgray; */
   display: flex;
   align-items: flex-end;
  
@@ -130,22 +138,22 @@ nav ul li a, nav ul li span, header .action {
 input.danger {
   color: #cc2f2e;
 }
-
+/* 
 input[type=submit] {
   align-self: start;
   min-width: 10em;
-}
+} */
 .container{
-  max-width: 600px;
+  /* max-width: 600px; */
   margin: auto;
   display: block;
 }
 /* posts.html */
 .postcard{
   border-radius: 10px;
-  box-shadow:1px 1px 5px wheat;
+  box-shadow:1px 1px 5px lightgray;
   
-  min-width: 15rem; 
+  min-width: 18rem; 
   max-width: 25rem; 
   margin-top: 5px;
 }
@@ -155,12 +163,71 @@ input[type=submit] {
 }
 .card-img-top{
   margin:auto;
-  margin-top:40px;
+  padding:10px;
 }
 .card-group{
   margin-top: 30px;
 }
+/* search */
+.search{
+  max-width: 90%;
+  margin:auto;
+  display: block;
+  background-color: lightgrey;
+}
+/* dashboad(index) page */
+.section1{
+  border-radius: 10px;
+  box-shadow:1px 1px 5px lightgray;
+
+}
+.profilecard a{
+  padding: auto;
+  text-align: bottom;
+  margin:auto;
+  
+}
+
+/* profile html */
+.btn-light{
+  color: #377ba8;
+  border: 1px solid #377ba8;
+  max-width: 250px;
+}
+.profilebox{
+  min-width: 400px;
+  margin-top: 1.5rem;
+  padding:1.5rem;
+  border: 1px solid lightgray ;
+}
+.pfpicon{
+  width:100px;
+  height:100px;
+}
+.progress-bar-vertical {
+  width: 20px;
+  min-height: 80px;
+  margin-right: 20px;
+  float: left;
+  display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+  display: -ms-flexbox;  /* TWEENER - IE 10 */
+  display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+  display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
+  align-items: flex-end;
+  -webkit-align-items: flex-end; /* Safari 7.0+ */
+}
+
+.progress-bar-vertical .progress-bar {
+  width: 100%;
+  height: 0;
+  /* background-color: #377ba8; */
+  background-color: #f1676e;
+  -webkit-transition: height 0.6s ease;
+  -o-transition: height 0.6s ease;
+  transition: height 0.6s ease;
+}
 /* post.html */
+
 .post-image{
   
   margin:auto;
@@ -168,4 +235,13 @@ input[type=submit] {
   min-width: 300px; 
   max-width: 800px; 
   margin-top: 5px;
+}
+
+/* api html */
+.flickr{
+  margin:auto;
+  display:block;
+  max-width: 200px;
+  
+
 }

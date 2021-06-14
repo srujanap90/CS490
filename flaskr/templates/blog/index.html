@@ -2,15 +2,75 @@
 
 {% block header %}
   <h1>{% block title %}HomePage{% endblock %}</h1>
-  <a href="{{url_for('blog.posts',offset=0)}}">See new post!!</a>
-
-<!-- chat! -->
   
-
+ 
 
 
 {% endblock %}
 
 {% block content %}
-<!-- <a class="action" href="{{ url_for('blog.create') }}">welcome</a> -->
+{% if g.user %}
+<div class="section1">
+  <div class="row overflow-auto">
+    <div class="col-sm-4 profilecard">
+        <h5 >user: {{ g.user['nickname'] }} </h5>
+        <img src="{{g.user['pfp']}}"style="width:150px">
+       
+        <hr>
+        <p>member since: {{g.user['register_date'].strftime('%Y-%m')}}</p>
+        <p>last login: {{g.user['last_login'].strftime('%Y-%m-%d-%H:%M:%S') }}</p>
+        <p><a href="{{url_for('auth.update')}}">edit profile</a></p>
+        </div>
+    <div class="col-sm-4 profilecard">
+      <h5>My Recent posts: </h5>
+      {%for post in posts %}
+        <a href="{{ url_for('blog.post', id=post['id'],dir=0) }}">{{post['title']}}</a>
+        <br>
+      {% endfor %}
+      <hr>
+      
+      </div>
+    <div class="col-sm-4 profilecard">
+        
+        <a href="{{url_for('blog.profile',id=g.user['id'])}}">my profile</a>
+    </div>
+      </div>
+    </div>
+    <!-- see the post from user following -->
+
+      <h3>See New Post:</h3>
+      <div class="card-group">
+      {% for post in following %}
+        
+      <div class="card postcard" id="#postcard" >
+        {%if post['img_url'] %}
+              <a href="{{ url_for('blog.post', id=post.id,dir=0) }}"><img src="{{ post['img_url'] }} "  class="card-img-top" alt="the image from post {{ post['title'] }} "></a>
+              {%else%}
+              <a href="{{ url_for('blog.post', id=post.id,dir=0) }}"><img src="https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png "  class="card-img-top" alt="the image from post {{ post['title'] }} " style="width:100px; height:100px"></a>
+        {%endif%}
+        <div class="card-body">
+          <h5 class="card-title"><a href="{{ url_for('blog.post', id=post['id'],dir=0) }}">{{  post['title']  }}</a></h5>
+          <p class="card-name">by {{ post['nickname'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</p>
+            {%if post['body'] %}
+              {% if post['body']| length>100 %}
+              <p class="card-text"> <i> "{{ post['body'][:100] }}..."</i></p>
+              {%else%}
+              <p class="card-text"> <i> "{{ post['body'] }}"</i></p>
+              {%endif%}
+            {%endif%}
+          <a href="{{ url_for('blog.post', id=post.id,dir=0) }}" >details</a>
+        </div>
+        </div>
+  
+       
+      {% endfor %}
+        
+ 
+      
+    </div>
+
+
+{%else%}
+    <h1>Hi, please login first!</h1>
+{%endif%}
 {% endblock %}

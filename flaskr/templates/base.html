@@ -1,30 +1,35 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} </title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<nav>
-  <h1><a href="{{ url_for('index') }}">Blogs</a></h1>
-  <ul>
-    {% if g.user %}
+<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
+<link rel="stylesheet" href="/static/style.css">
 
+
+<nav class="navbar">
+  <ul>
+    <li><span><a href="{{ url_for('index') }}"><img src="/static/img/icon.png" style="margin:auto; width:100px" alt="PHOTOBOX"></a></span></li>
+    <li><span><a href="{{ url_for('index') }}"><h1>PHOTOBOX</h1></a></span></li>
+   
+    <li><span><a href="{{url_for('blog.posts',offset=0)}}">Explore</a></span></li>
+    {% if g.user %}
+      <li><span><a>Hello! </a></span></li>
+      <li><span><img src="{{g.user['pfp']}}" style="width:30px"> </span></li>
+      <li><span><a href="{{ url_for('index') }}" >{{ g.user['nickname'] }}</a></span></li>
       <li> <span><a href="https://realtime-chatapp-2283c.web.app/">ChatRoom</span></a></li>
-      <li> <span><a href="{{ url_for('blog.search') }}">Search</span></a>
-      </li>
-      <li><span>Hello! | {{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
+      <li> <span><a href="{{ url_for('blog.search') }}">Search</a></span></li>
+      <li><span><a href="{{ url_for('auth.logout') }}">Log Out</a></span></li>
     {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
+      <li><span><a href="{{ url_for('auth.register') }}">Register</a></span></li>
+      <li><span><a href="{{ url_for('auth.login') }}">Log In</a></span></li>
     {% endif %}
   </ul>
+
 </nav>
-<hr>
+
 <section class="content">
   <header>
     {% block header %}{% endblock %}
   </header>
-  <!-- {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %} -->
+
   {% block content %}{% endblock %}
 </section>

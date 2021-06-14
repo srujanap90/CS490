@@ -6,14 +6,15 @@
 
 {% block content %}
 <div class="container">
-  <form method="post">
+  <form method="post"enctype='multipart/form-data'>
     <label for="title">Title</label>
     <input name="title" id="title" value="{{ request.form['title'] }}" required>
     <label for="body">Body</label>
     <textarea name="body" id="body">{{ request.form['body'] }}</textarea>
-    <label for="img_url">attack your nice photo!</label>
-    <input name="img_url" id="img_url" value="{{ request.form['img_url'] }}" >
-    <input type="submit" value="Save">
+
+    <label for="img">Upload Your Work: (only 'png', 'jpg', 'jpeg', 'gif' allowed)</label>
+    <input type=file name="file" id="file"  >
+    <input type="submit" value="Save" class="btn btn-light">
     <a href="{{ url_for('blog.posts', offset=0) }}">Cancel</a>
   </form>
 </div>

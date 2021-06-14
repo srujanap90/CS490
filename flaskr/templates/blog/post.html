@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
 
 {% block header %}
+<table style="width: 100%;">
+  <tr>
+  <td>
+    <h1><a href="{{url_for('blog.post',id =post['id'],dir=0)}}">{% block title %}Post | {{post ['title']}}{% endblock %}</a></h1>
+  </td>
+  <td style="text-align: right;"> 
+    <a href="{{url_for('blog.posts',offset=0)}}">Back to posts</a>
+  </td>
+</tr>
+</table>
 
-  <h1><a href="{{url_for('blog.post',id =post['id'],dir=0)}}">{% block title %}Post | {{post ['title']}}{% endblock %}</a></h1>
-  <a href="{{url_for('blog.posts',offset=0)}}">Back to posts</a>
+
 {% endblock %}
 
   {% block content %}
@@ -11,14 +20,37 @@
     
     <article class="post">
       <header>
-        <div>
-          <h1>{{ post['title'] }}</h1>
-          <div class="about">by {{ post['username'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
-        </div>
-        {% if g.user['id'] == post['author_id'] %}
-          <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-        {% endif %}
-        
+        <table style="width :100%">
+          <tr>
+          <td>
+            <div class="about"><img src="{{post['pfp']}}"style="width:50px"> by <a href="{{url_for('blog.profile',id=post['author_id'])}}">{{ post['nickname'] }} </a>on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
+          </td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td>&nbsp;</td>
+          <td style="text-align: right;">
+            <h5>likes: {{likes|length}}</h5>   
+          </td>
+          <td style="text-align: right;">
+            {% if liked %}
+            <form method="post" action="{{url_for('blog.unlike',id=post['id'])}}">
+              <button class="btn btn-light" id="unlikebtn" ><span>liked</span></button>
+            </form>
+            {%else%}
+              <form method="post" action="{{url_for('blog.like',id=post['id'])}}">
+                <button class="btn btn-light" id="likebtn" >like</button>
+              </form>
+            {% endif %}
+          </td>
+          
+          <td>
+            {% if g.user['id'] == post['author_id'] %}
+            <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+            {% endif %}
+          </td>
+        </tr>
+        </table>
       </header>
 
         {%if post['img_url'] %}
@@ -142,6 +174,7 @@
             x.style.display = 'none';
         }
     }
+    
     </SCRIPT>
 
 

@@ -1,0 +1,32 @@
+{% extends 'admin/index.html' %}
+{%block content%}
+<table style="width: 100%;">
+    <th>id</th>
+    <th>username</th>
+    <th>nickname</th>
+    <th>useremail</th>
+    <th>website</th>
+    <th>user_type</th>
+    <th>register_date</th>
+    <th>last_login</th>
+    {%for user in users %}
+    <tr>
+        <td> {{user['id']}}</td>
+        <td>{{user['username']}}</td>
+        <td>{{user['nickname']}}</td>
+        <td>{{user['useremail']}}</td>
+        <td>{{user['website']}}</td>
+        <td>{{user['user_type']}}</td>
+        <td>{{user['register_date']}}</td>
+        <td>{{user['last_login']}}</td>
+    </tr>  
+    {%endfor%}  
+</table>
+
+
+
+
+
+
+
+{%endblock%}

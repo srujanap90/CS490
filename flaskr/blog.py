@@ -10,14 +10,136 @@ from datetime import timezone, datetime, timedelta
 import pytz
 from flaskr.auth import login_required
 from flaskr.db import get_db
-
-
+import urllib.request, json 
+from flask import session
+from werkzeug.utils import secure_filename
+import os
+from os.path import join, dirname, realpath
+import uuid
 
 bp = Blueprint("blog", __name__)
 
 @bp.route("/")
 def index():
+    posts=""
+
+    if g.user:
+        user=g.user['id']
+        db = get_db()
+        posts = db.execute(
+            "SELECT id, title, body, created, author_id, img_url"
+            " FROM post "
+            " WHERE author_id = ? "
+            " ORDER BY created DESC"
+            " LIMIT 5"
+            ,(user,)
+        ).fetchall()
+        following = db.execute(
+            "SELECT *"
+            " FROM follow f JOIN post p ON p.author_id=f.follows_id"
+            " JOIN user u ON p.author_id=u.id"
+            " WHERE f.user_id = ? "
+            " ORDER BY created DESC"
+            ,(user,)
+        ).fetchall()
+
+        # check new updates from likes, followers, comments
+        time=datetime.now(pytz.timezone('America/New_York'))
+        
+        return render_template("blog/index.html",posts=posts, following=following)
     return render_template("blog/index.html")
+
+
+@bp.route("/<int:id>/profile", methods=("POST","GET"))
+@login_required
+def profile(id):
+    db = get_db()
+    c_user=g.user['id']
+    followed=False
+    msg=""
+    user = db.execute(
+                "SELECT *"
+                " FROM user "
+                " WHERE user.id =?", 
+                (id,),
+                ).fetchone()
+    posts=db.execute(
+                 "SELECT p.id, title, body, created, img_url, author_id, nickname,username"
+                " FROM post p JOIN user u ON p.author_id = u.id"
+                " WHERE u.id=? "
+                " ORDER BY created DESC", 
+                (id,),
+                ).fetchall()
+    following = db.execute(
+            "SELECT DISTINCT *"
+            " FROM follow f JOIN user u ON f.follows_id=u.id"
+            " WHERE user_id = ? ",
+            (id,),
+            ).fetchall()
+    followers = db.execute(
+            "SELECT DISTINCT *"
+            " FROM follow f JOIN user u ON f.user_id=u.id"
+            " WHERE follows_id = ? ",
+            (id,),
+            ).fetchall()
+    check=db.execute(
+            "SELECT  *"
+            " FROM follow "
+            " WHERE user_id = ? AND follows_id = ? ",
+            (c_user,id,),
+            ).fetchall()
+    if len(check)!=0:
+        followed=True
+    # check a user's popularity
+    pop=round(popularity(id),2)
+    if len(user)==0:
+        msg="no such a user, please try again."
+    else:
+        return render_template("blog/profile.html",user=user,posts=posts, followers=followers, msg=msg, following=following,followed=followed,pop=pop)
+
+def popularity(id):
+    pop=0
+    db = get_db()
+    posts=db.execute(
+                 "SELECT *"
+                " FROM post p JOIN user u ON p.author_id = u.id"
+                " WHERE u.id=? ", 
+                (id,),
+                ).fetchall()
+    followers = db.execute(
+            "SELECT DISTINCT *"
+            " FROM follow f JOIN user u ON f.user_id=u.id"
+            " WHERE follows_id = ? ",
+            (id,),
+            ).fetchall()
+    likes = db.execute(
+            "SELECT *"
+            " FROM post p JOIN likes l ON p.id=l.post_id"
+            " JOIN user u ON p.author_id=u.id"
+            " WHERE p.author_id = ? ", 
+            (id,),
+            ).fetchall()
+    totalposts=len(db.execute("SELECT * FROM post").fetchall())
+    totalusers=len(db.execute("SELECT * FROM user").fetchall())
+    totallikes=len(db.execute('SELECT * FROM likes').fetchall())
+    rank=(len(posts)/totalposts)
+    rank=rank+(len(followers)/totalusers)
+    rank=rank+(len(likes)/totallikes)
+    ranks=db.execute("SELECT * FROM ranks").fetchall()
+    totalsum=0
+    for r in ranks:
+        totalsum+=r['rank']
+    # print(totalsum)
+    if totalsum!=0 :
+        rank=rank/(rank+totalsum)
+    # print(rank)
+    if(db.execute("SELECT * FROM ranks WHERE user_id=?",(id,)).fetchone()):
+        db.execute("UPDATE ranks SET rank=? WHERE user_id=?",(rank,id,))
+        db.commit()
+    else:
+        db.execute("INSERT INTO ranks (user_id,rank) VALUES(?,?)",(id,rank,))
+        db.commit()
+    return rank
 
 
 @bp.route("/<int:offset>/posts", methods=("GET", "POST"))
@@ -29,35 +151,58 @@ def posts(offset):
     q = request.args.get('q')
     if q:
         search = True
+    # grab all posts in site
     db = get_db()
     count=len(db.execute("SELECT * FROM post").fetchall())
-
-
     posts = db.execute(
-        "SELECT p.id, title, body, created, author_id, img_url, username"
+        "SELECT *"
         " FROM post p JOIN user u ON p.author_id = u.id"
         " ORDER BY created DESC"
         " LIMIT 50"
         " OFFSET ?",(offset,)
     ).fetchall()
    
-    return render_template("blog/posts.html", posts=posts,count=count)
+    return render_template("blog/posts.html", posts=posts)
+
+# @bp.route("/api",methods=("GET","POST"))
+# @login_required
+# def api():
+#   # flickr api onload
+#     tag='cats'
+#     if request.method == "POST":
+#         searchflickr=request.form['searchflickr']
+#         print(searchflickr)
+#         tag=searchflickr
+#     print(tag)
+#     with urllib.request.urlopen("https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=eb884d8dd3938fa40910decb88bbd9ad&tags="+tag+"&format=json&nojsoncallback=1&api_sig=2a338fed2b0cd07377a7f7127b518e8c") as url:
+#         data = json.loads(url.read().decode())
+#         photos=data['photos']['photo']
+#     for photo in photos:
+#         photo['url']='http://farm'+str(photo['farm'])+'.staticflickr.com/'+photo['server']+'/'+photo['id']+'_'+photo['secret']+'.jpg'
+#     return render_template("blog/ins.html", photos=photos)   
+
 
 @bp.route("/<int:id>/<int:dir>/post", methods=("GET", "POST"))
 @login_required
 def post(id,dir):
     """Show the post details"""
+    user_id = session.get("user_id")
     db = get_db()
     # count=len(db.execute("SELECT * FROM post").fetchall())
     max=db.execute("SELECT MAX(id) FROM post").fetchone()['MAX(id)']
-  
+    
     post1 = db.execute(
-        "SELECT p.id, title, body, created, img_url, author_id, username"
+        "SELECT p.id, title, body, created, img_url, author_id, pfp, nickname,username"
         " FROM post p JOIN user u ON p.author_id = u.id"
         " WHERE p.id = ? ", 
         (id,),
         ).fetchone()
-   
+    likes = db.execute(
+        "SELECT *"
+        " FROM post p JOIN likes l ON p.id=l.post_id"
+        " WHERE p.id = ? ", 
+        (id,),
+        ).fetchall()
     while post1 is None: #if cant find the post id(maybe it's deleted or out of range)
         if id>max or id<1: #if it is out of range:
             return render_template("blog/nopost.html")
@@ -67,11 +212,17 @@ def post(id,dir):
         elif dir==1:#1: go next
             id=id+1
         post1 = db.execute(
-            "SELECT p.id, title, body, created, img_url, author_id, username"
+            "SELECT p.id, title, body, created, img_url, author_id, nickname,username"
             " FROM post p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ? ", 
             (id,),
             ).fetchone()    
+        likes = db.execute(
+            "SELECT *"
+            " FROM post p JOIN likes l ON p.id=l.post_id"
+            " WHERE p.id = ? ", 
+            (id,),
+            ).fetchall()
 
 
     # commentcount=len(db.execute("SELECT * FROM post").fetchall())
@@ -84,9 +235,60 @@ def post(id,dir):
         " WHERE c.post_id = ? ORDER BY c.created DESC", 
         (id,),
         ).fetchall()
-    
-    return render_template("blog/post.html", post=post1,comments=comments)
+    liked=False
+    check = db.execute(
+           " SELECT * FROM likes WHERE user_id = ? AND post_id = ?", (user_id ,id,),
+        ).fetchone()
+    if check:
+        liked=True
+    return render_template("blog/post.html", post=post1,comments=comments,liked=liked,likes=likes)
 
+
+
+    
+    
+@bp.route("/<int:id>/like", methods=("GET", "POST"))
+@login_required
+def like(id):
+    """follow another user"""
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        db = get_db()
+        # current user (user_id) follows profile user (id)
+        check = db.execute(
+           " SELECT * FROM likes WHERE user_id = ? AND post_id = ?", (user_id ,id,),
+        ).fetchone()
+        if not check:
+            db.execute(
+                "INSERT INTO likes (user_id, post_id) VALUES (?, ?) ",(user_id ,id,),
+            )
+            db.commit()
+        return redirect(url_for("blog.post",id=id,dir=0))
+
+@bp.route("/<int:id>/unlike", methods=("GET", "POST"))
+@login_required
+def unlike(id):
+    """follow another user"""
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        db = get_db()
+        # current user (user_id) follows profile user (id)
+        # delete this relationship
+        check = db.execute(
+           " SELECT * FROM likes WHERE user_id = ? AND post_id = ?", (user_id ,id,),
+        ).fetchone()
+        if check:
+            db.execute(
+                "DELETE FROM likes WHERE user_id=? AND post_id=? ",(user_id ,id,),
+            )
+            db.commit()
+        return redirect(url_for("blog.post",id=id,dir=0))
+
+
+
+
+
+    
 @bp.route("/<int:id>/<int:user>/comment", methods=("GET", "POST"))
 @login_required
 def comment(id,user):
@@ -205,20 +407,47 @@ def get_post(id, check_author=True):
 
     return post
 
+UPLOAD_FOLDER = './static/upload'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
+    user_id = session.get("user_id")
     """Create a new post for the current user."""
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
-        img_url = request.form["img_url"]
+        # img_url = request.form["img_url"]
         error = None
          #get current time stamp and convert to new york time
         time=datetime.now(pytz.timezone('America/New_York'))
         if not title:
             error = "Title is required."
+
+        img_url="#"
+        if 'file' not in request.files:
+            flash('No file part')
+            print('No file part')
+            # return render_template("auth/edit.html")
+        else:
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit a empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                print('No selected file')
+                return render_template("auth/edit.html")
+            if file and allowed_file(file.filename):
+                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+file.filename)
+                # file.save(os.path.join(UPLOAD_FOLDER, filename))
+                UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/upload/post')
+                file.save(os.path.join(UPLOADS_PATH, filename))
+                img_url='/static/upload/post/'+filename
 
         if error is not None:
             flash(error)
@@ -233,35 +462,7 @@ def create():
 
     return render_template("blog/create.html")
 
-
-@bp.route("/<int:id>/update", methods=("GET", "POST"))
-@login_required
-def update(id):
-    """Update a post if the current user is the author."""
-    post = get_post(id)
-
-    if request.method == "POST":
-        title = request.form["title"]
-        body = request.form["body"]
-        img_url = request.form["img_url"]
-        error = None
-
-        if not title:
-            error = "Title is required."
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                "UPDATE post SET title = ?, body = ?, img_url=? WHERE id = ?", (title, body,img_url, id)
-            )
-            db.commit()
-            return redirect(url_for("blog.post",id=id,dir=0))
-
-    return render_template("blog/update.html", post=post)
-
-
+# delete post
 @bp.route("/<int:id>/delete", methods=("POST",))
 @login_required
 def delete(id):
@@ -275,13 +476,53 @@ def delete(id):
     db.commit()
     return redirect(url_for("blog.posts",offset=0))
 
-# @bp.route("/<int:id>/likes",methods="GET")
-# @login_required
-# def likepost(id):
-#     db=get_db()
-#     db.execute("INSERT INTO likes WHERE post_id= ?",(id,))
-#     db.commit()
-#     return redirect(url_for("blog.posts",offset=0))
+# update post
+@bp.route("/<int:id>/update", methods=("GET", "POST"))
+@login_required
+def update(id):
+    """Update a post if the current user is the author."""
+    post = get_post(id)
+    user_id = session.get("user_id")
+    if request.method == "POST":
+        title = request.form["title"]
+        body = request.form["body"]
+        # img_url = request.form["img_url"]
+        error = None
+        db = get_db()
+        img_url=db.execute("SELECT img_url FROM post WHERE id=?",(id,)).fetchone()[0]
+        if 'file' not in request.files:
+            flash('No file part')
+            print('No file part')
+            # return render_template("auth/edit.html")
+        else:
+            file = request.files['file']
+            # if user does not select file, browser also
+            # submit a empty part without filename
+            if file.filename == '':
+                flash('No selected file')
+                print('No selected file')
+                return render_template("auth/edit.html")
+            if file and allowed_file(file.filename):
+                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+file.filename)
+                # file.save(os.path.join(UPLOAD_FOLDER, filename))
+                UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/upload/post')
+                file.save(os.path.join(UPLOADS_PATH, filename))
+                img_url='/static/upload/post/'+filename
+
+        if not title:
+            error = "Title is required."
+
+        if error is not None:
+            flash(error)
+        else:
+            
+            db.execute(
+                "UPDATE post SET title = ?, body = ?, img_url=? WHERE id = ?", (title, body,img_url, id)
+            )
+            db.commit()
+            return redirect(url_for("blog.post",id=id,dir=0))
+
+    return render_template("blog/update.html", post=post)
 
 @bp.route("/search", methods=("POST","GET"))
 @login_required
@@ -311,10 +552,10 @@ def search():
             users = db.execute(
                 "SELECT *"
                 " FROM user"
-                " WHERE username LIKE ?", 
+                " WHERE nickname LIKE ? AND user_type='user'", 
                 (text,),
                 ).fetchall()
-        
+            
             if len(posts) ==0: #if cant find the post id(maybe it's deleted or out of range)
                 msg['posts']="No result from posts"
             if len(users) ==0:
@@ -322,26 +563,3 @@ def search():
             return render_template("blog/result.html",posts=posts, users=users,word=body,msg=msg)
     return render_template("blog/search.html")
 
-
-@bp.route("/<int:id>/profile", methods=("POST","GET"))
-@login_required
-def profile(id):
-    db = get_db()
-    msg=""
-
-    user = db.execute(
-                "SELECT *"
-                " FROM user "
-                " WHERE user.id =?", 
-                (id,),
-                ).fetchone()
-    posts=db.execute(
-                 "SELECT p.id, title, body, created, img_url, author_id, username"
-                " FROM post p JOIN user u ON p.author_id = u.id"
-                " WHERE u.id=? ", 
-                (id,),
-                ).fetchall()
-    if len(user)==0:
-        msg="no such a user, please try again."
-    else:
-        return render_template("blog/profile.html",user=user,posts=posts,msg=msg)
