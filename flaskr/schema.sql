@@ -56,7 +56,8 @@
 
 -- CREATE TABLE ranks (
 --         user_id INTEGER,
---         rank float )
+--         rank float,
+--         points INTERGER default 1 )
 
 -- DELETE FROM user;
 -- INSERT INTO user(id,username,password,useremail,user_type) VALUES (1,'admin','admin','admin@heroku.com','admin');
@@ -64,6 +65,6 @@
 -- SELECT * FROM user;
 -- ALTER TABLE user ADD nickname TEXT DEFAULT 'nickname';
 
-ALTER TABLE user ADD pfp TEXT DEFAULT '#';
+
 
 

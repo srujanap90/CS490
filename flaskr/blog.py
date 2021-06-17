@@ -9,7 +9,7 @@ from werkzeug.exceptions import abort
 from datetime import timezone, datetime, timedelta
 import pytz
 from flaskr.auth import login_required
-from flaskr.db import get_db
+from flaskr.db import get_db, get_con
 import urllib.request, json 
 from flask import session
 from werkzeug.utils import secure_filename
@@ -42,11 +42,17 @@ def index():
             " ORDER BY created DESC"
             ,(user,)
         ).fetchall()
-
+        followers = db.execute(
+            "SELECT DISTINCT *"
+            " FROM follow f JOIN user u ON f.user_id=u.id"
+            " WHERE follows_id = ? ",
+            (user,),
+            ).fetchall()
+        pop=round(popularity(user),2)
         # check new updates from likes, followers, comments
         time=datetime.now(pytz.timezone('America/New_York'))
         
-        return render_template("blog/index.html",posts=posts, following=following)
+        return render_template("blog/index.html",posts=posts, following=following, followers=followers,pop=pop)
     return render_template("blog/index.html")
 
 
@@ -119,27 +125,54 @@ def popularity(id):
             " WHERE p.author_id = ? ", 
             (id,),
             ).fetchall()
-    totalposts=len(db.execute("SELECT * FROM post").fetchall())
-    totalusers=len(db.execute("SELECT * FROM user").fetchall())
-    totallikes=len(db.execute('SELECT * FROM likes').fetchall())
-    rank=(len(posts)/totalposts)
-    rank=rank+(len(followers)/totalusers)
-    rank=rank+(len(likes)/totallikes)
-    ranks=db.execute("SELECT * FROM ranks").fetchall()
-    totalsum=0
-    for r in ranks:
-        totalsum+=r['rank']
-    # print(totalsum)
-    if totalsum!=0 :
-        rank=rank/(rank+totalsum)
-    # print(rank)
+   
+    # totalposts=len(db.execute("SELECT * FROM post").fetchall())
+    # totalusers=len(db.execute("SELECT * FROM user WHERE NOT user_type='admin' ").fetchall())
+    # totallikes=len(db.execute('SELECT * FROM likes').fetchall())
+    points=(len(posts))*2
+    points=points+(len(followers))*5
+    points=points+(len(likes))*3
+
+
+    # compute the ranking by pandas' map function
+    # con=get_con()
+    # df = pd.read_sql_query("SELECT * FROM ranks", con)
+    # con.close()
+    # print(df.head())
+    # result=pd.cut(df['rank'],bins=100)
+
+
     if(db.execute("SELECT * FROM ranks WHERE user_id=?",(id,)).fetchone()):
-        db.execute("UPDATE ranks SET rank=? WHERE user_id=?",(rank,id,))
+        db.execute("UPDATE ranks SET points=? WHERE user_id=?",(points,id,))
         db.commit()
     else:
-        db.execute("INSERT INTO ranks (user_id,rank) VALUES(?,?)",(id,rank,))
+        db.execute("INSERT INTO ranks (user_id,points) VALUES(?,?)",(id,points,))
         db.commit()
+
+    totalranks=db.execute("SELECT * FROM ranks ").fetchall()
+    print(points)
+    sum=[]
+    max=0
+    min=100
+    for i in range(len(totalranks)):
+        sum.append(totalranks[i]['points'])
+        if totalranks[i]['points']>max:
+            max=totalranks[i]['points']
+        if totalranks[i]['points']<min:
+            min=totalranks[i]['points']
+    s=(max-min)/100
+    if s==0:
+        s=1
+    for i in range(len(totalranks)):
+        r=(totalranks[i]['points']-min)/s+1
+        print(r)
+        db.execute("UPDATE ranks SET rank=? WHERE user_id=?",(r,totalranks[i]['user_id'],))
+        db.commit()
+
+    rank=db.execute("SELECT * FROM ranks WHERE user_id=?",(id,)).fetchone()['rank']
+    print(rank)
     return rank
+
 
 
 @bp.route("/<int:offset>/posts", methods=("GET", "POST"))
@@ -228,7 +261,7 @@ def post(id,dir):
     # commentcount=len(db.execute("SELECT * FROM post").fetchall())
     
     comments = db.execute(
-        "SELECT c.id, c.post_id,c.body, c.created, c.author_id, c.retweet_id,u.username"
+        "SELECT c.id, c.post_id,c.body, c.created, c.author_id, c.retweet_id,u.username,u.nickname"
         " FROM comments c "
         " LEFT JOIN post p ON c.post_id = p.id"
         " LEFT JOIN user u ON c.author_id = u.id"
@@ -373,6 +406,16 @@ def commentretweet(id,user,rid):
      
     return  redirect(url_for("blog.post",id=id,dir=0))
 
+@bp.route("/<int:id>/<int:cid>/admincommentdelete", methods=("POST",))
+@login_required
+def admincommentdelete(id,cid):
+    """Delete a comment as admin
+    """
+    db = get_db()
+    db.execute("DELETE FROM comments WHERE id = ?", (cid,))
+    # print("DELETE FROM comments WHERE id = ?", (cid,))
+    db.commit()
+    return redirect(url_for("blog.post",id=id,dir=0))
 
 
 
@@ -391,7 +434,7 @@ def get_post(id, check_author=True):
     post = (
         get_db()
         .execute(
-            "SELECT p.id, title, body, created, img_url, author_id, username"
+            "SELECT p.id, title, body, created, img_url, author_id, username,nickname"
             " FROM post p JOIN user u ON p.author_id = u.id"
             " WHERE p.id = ?",
             (id,),
@@ -443,7 +486,7 @@ def create():
                 print('No selected file')
                 return render_template("auth/edit.html")
             if file and allowed_file(file.filename):
-                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+file.filename)
+                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+"-"+str(time)+file.filename)
                 # file.save(os.path.join(UPLOAD_FOLDER, filename))
                 UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/upload/post')
                 file.save(os.path.join(UPLOADS_PATH, filename))
@@ -483,6 +526,7 @@ def update(id):
     """Update a post if the current user is the author."""
     post = get_post(id)
     user_id = session.get("user_id")
+    time=datetime.now(pytz.timezone('America/New_York'))
     if request.method == "POST":
         title = request.form["title"]
         body = request.form["body"]
@@ -503,7 +547,7 @@ def update(id):
                 print('No selected file')
                 return render_template("auth/edit.html")
             if file and allowed_file(file.filename):
-                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+file.filename)
+                filename = secure_filename(str(user_id)+"-"+str(uuid.uuid4())+"-"+str(time)+file.filename)
                 # file.save(os.path.join(UPLOAD_FOLDER, filename))
                 UPLOADS_PATH = join(dirname(realpath(__file__)), 'static/upload/post')
                 file.save(os.path.join(UPLOADS_PATH, filename))
@@ -544,7 +588,7 @@ def search():
             db = get_db()
   
             posts = db.execute(
-                "SELECT p.id, title, body, created, img_url, author_id, username"
+                "SELECT p.id, title, body, created, img_url, author_id, username,nickname"
                 " FROM post p JOIN user u ON p.author_id = u.id"
                 " WHERE title LIKE ? ", 
                 (text,),
@@ -563,3 +607,7 @@ def search():
             return render_template("blog/result.html",posts=posts, users=users,word=body,msg=msg)
     return render_template("blog/search.html")
 
+@bp.route("/api")
+@login_required
+def api():
+    return render_template("API/index.html")

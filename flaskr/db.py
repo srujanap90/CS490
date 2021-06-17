@@ -19,6 +19,11 @@ def get_db():
 
     return g.db
 
+def get_con():
+    con = sqlite3.connect(
+            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
+        )
+    return con
 
 def close_db(e=None):
     """If this request connected to the database, close the

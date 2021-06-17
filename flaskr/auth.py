@@ -267,16 +267,124 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
 
+
 @bp.route("/admin")
+@login_required
 def admin():
-    return render_template("admin/index.html")
+    db=get_db()
+    users=db.execute("SELECT * "
+            "FROM user"
+            ).fetchall()
+    posts=db.execute("SELECT * "
+            "FROM post p"
+            " JOIN user u ON p.author_id=u.id"
+            " ORDER BY created DESC"
+            ).fetchall()
+    max=db.execute("SELECT MAX(rank),user_id,nickname FROM ranks JOIN user ON user.id=ranks.user_id").fetchone()
+    ranks=db.execute("SELECT * FROM ranks JOIN user ON user.id=ranks.user_id").fetchall()
+    return render_template("admin/index.html",users=users,posts=posts,max=max,ranks=ranks)
 
 @bp.route("/adminusers")
+@login_required
 def adminusers():
     db=get_db()
-    users=db.execute("SELECT * FROM user").fetchall()
+    users=db.execute("SELECT * "
+            "FROM user"
+            ).fetchall()
     return render_template("admin/users.html",users=users)
 
 @bp.route("/adminposts")
+@login_required
 def adminposts():
-    return render_template("admin/posts.html")
+    db=get_db()
+    posts=db.execute("SELECT * "
+            "FROM post p"
+            " JOIN user u ON p.author_id=u.id"
+            " ORDER BY created DESC"
+            ).fetchall()
+    return render_template("admin/posts.html",posts=posts)
+
+@bp.route("/adminsearch", methods=("POST","GET"))
+@login_required
+def search():
+    """return the result of list of users and posts
+    """
+    msg={'post':"",'users':""}
+    if request.method == "POST":
+        body=request.form["searchbody"]
+        text = "%"+request.form["searchbody"].lower()+"%"
+        error = None
+        if error is not None:
+            flash(error)
+        if not body:
+            error = "context is required."
+        else:
+            db = get_db()
+            posts = db.execute(
+                "SELECT p.id, title, body, created, img_url, author_id, username"
+                " FROM post p JOIN user u ON p.author_id = u.id"
+                " WHERE title LIKE ? ", 
+                (text,),
+                ).fetchall()
+            users = db.execute(
+                "SELECT *"
+                " FROM user"
+                " WHERE nickname LIKE ? AND user_type='user'", 
+                (text,),
+                ).fetchall()
+            
+            if len(posts) ==0: #if cant find the post id(maybe it's deleted or out of range)
+                msg['posts']="No result from posts"
+            if len(users) ==0:
+                msg['users']="No result from users"
+            return render_template("admin/result.html",posts=posts, users=users,word=body,msg=msg)
+    return render_template("admin/search.html")
+
+
+
+
+
+@bp.route("/<int:id>/deletepost", methods=("GET", "POST"))
+@login_required
+def deletepost(id):
+    # print(id)
+    if request.method =="POST":
+        db=get_db()
+        db.execute(
+                "DELETE FROM post WHERE id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM likes WHERE post_id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM comments WHERE post_id=? ",(id,),
+            )
+        db.commit()
+    return redirect(url_for('auth.adminposts'))
+
+@bp.route("/<int:id>/deleteuser", methods=("GET", "POST"))
+@login_required
+def deleteuser(id):
+    if request.method =="POST":
+        db=get_db()
+        db.execute(
+                "DELETE FROM user WHERE id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM post WHERE author_id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM likes WHERE user_id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM ranks WHERE id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM follow WHERE user_id=? ",(id,),
+            )
+        db.execute(
+                "DELETE FROM follow WHERE follows_id=? ",(id,),
+            )
+        db.commit()
+        
+    return redirect(url_for('auth.adminusers'))

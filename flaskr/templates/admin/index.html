@@ -1,37 +1,28 @@
-<!doctype html>
-<html>
-<title>Admin Page | PHOTOBOX </title>
-<head>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link rel="stylesheet" href="/static/style.css">
+{% extends 'admin/base.html' %}
 
-</head>
-<body>
-
-
-<nav class="navbar">
-  <ul>
-    <li><span><h1><a href="{{url_for('auth.admin')}}">Admin</a></h1></span></li>
-    <li><span><a href="{{url_for('auth.adminposts')}}">Posts</a></span></li>
-    <li><span><a href="{{url_for('auth.adminusers')}}">Users</a></span></li>
-    <li> <span><a href="{{ url_for('blog.search') }}">Search</a></span></li>
-    <li><span><a href="{{ url_for('auth.logout') }}">Log Out</a></span></li>
-  </ul>
-
-</nav>
-
-
-
-<section class="manage">
 {%block content%}
 
+<h2>Today :  <span id="datetime"></span></h2>
+<h2>Total Post : {{posts|length}}</h2>
+<h2>Total User : {{users|length}}</h2>
+<h2>Popular User: {{max['nickname']}}</h2>
+{% set pop = max['MAX(rank)'] %}
+<h2>Popularity: {{'%0.2f' % pop|float}}%</h2>
+<hr>
+<h2>Ranking Chart:</h2>
+{% for rank in ranks %}
+<div class="progress progress-bar-hr" style="margin-bottom: 0.3rem;">
+  <div class="progress-bar" role="progressbar" aria-valuenow="{{rank['rank']}}" aria-valuemin="0" aria-valuemax="100" style="width: {{rank['rank']}}%;">
+    <span class="sr-only">{{rank['rank']}}</span>
+    <label>{{rank['nickname']}}</label>
+  </div>
+</div>
+{%endfor%}
 
+
+<script>
+  var dt = new Date();
+  document.getElementById("datetime").innerHTML = dt.toLocaleString();
+  </script>
+  
 {%endblock%}
-</section>
-
-
-
-
-</body>
-
-</html>

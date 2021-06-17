@@ -26,7 +26,7 @@
         {%endif%}
         <div class="card-body">
           <h5 class="card-title"><a href="{{ url_for('blog.post', id=post['id'],dir=0) }}">{{  post['title']  }}</a></h5>
-          <p class="card-name"><img src="{{post['pfp']}}"style="width:30px">by {{ post['nickname'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</p>
+          <p class="card-name"><img src="{{post['pfp']}}"style="width:30px;height:30px">by {{ post['nickname'] }} on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</p>
             {%if post['body'] %}
               {% if post['body']| length>100 %}
               <p class="card-text"> <i> "{{ post['body'][:100] }}..."</i></p>

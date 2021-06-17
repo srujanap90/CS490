@@ -1,8 +1,46 @@
 {% extends 'admin/base.html' %}
-{%block content%}
-<h1>USERS</h1>
+
+{% block content %}
+Search Result for "{{word}}"
+<h2>total {{posts|length}} posts: </h2>
+{{msg['posts']}}
+<table style="width: 100%;text-align: center;">
+    <th>id</th>
+    <th>author_id</th>
+    <th>nickname</th>
+    <th>user_type</th>
+    <th>title</th>
+
+    <th>content</th>
+    <th>post created</th>
+    {%for post in posts %}
+    <tr class="user-table">
+        <td> {{post['id']}}</td>
+        <td>{{post['author_id']}}</td>
+        <td>{{post['nickname']}}</td>
+        <td>{{post['user_type']}}</td>
+        <td>{{post['title']}}</td>
+
+        <td>{{post['body']}}</td>
+        <td>{{post['created']}}</td>
+        <td>
+            {% if post['user_type']=='admin' %}
+            <input class="btn btn-secondary disabled" type="submit" value="Delete"  disabled>
+            {%else%}
+            <form action="{{ url_for('auth.deletepost',id=post['id']) }}" method="POST">
+                <input class="btn btn-danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+            </form>
+            {%endif%}
+            </td>
+    </tr>  
+    {%endfor%}  
+</table>
+
+
 <hr>
-<div class="admintable">
+
+<h2>total {{users|length}} users: </h2>
+{{msg['users']}}
 <table style="width: 100%;text-align: center;">
     <th>id</th>
     <th>pfp</th>
@@ -13,7 +51,6 @@
     <th>user_type</th>
     <th>register_date</th>
     <th>last_login</th>
-    <th>Operations</th>
     {%for user in users %}
     <tr class="user-table">
         <td> {{user['id']}}</td>
@@ -37,11 +74,7 @@
     </tr>  
     {%endfor%}  
 </table>
-</div>
 
+<hr>
 
-
-
-
-
-{%endblock%}
+{% endblock %}
