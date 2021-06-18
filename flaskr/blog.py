@@ -9,7 +9,7 @@ from werkzeug.exceptions import abort
 from datetime import timezone, datetime, timedelta
 import pytz
 from flaskr.auth import login_required
-from flaskr.db import get_db, get_con
+from flaskr.db import get_db
 import urllib.request, json 
 from flask import session
 from werkzeug.utils import secure_filename

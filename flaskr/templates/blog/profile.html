@@ -6,8 +6,11 @@
 {% endblock %}
 
 {% block content %}
-
+{%if user['status']=='disabled'%}
+<div class="section-gray profilepage"> 
+  {%else%}
 <div class="section profilepage"> 
+  {%endif%}
   {% if user %}
     <div class="container-fluid profilebox">
       <div class="row">
@@ -58,10 +61,14 @@
       </div>
       
       <div class="row">
-        <div class="col-sm-12"><b>About:  </b>{{user['about']}}</div>
+        <div class="col-sm-12"><b>About:  </b><p>{{user['about']}}</p></div>
       </div>
       <div class="row">
         <div class="col-sm-4"><b>Website:  </b><a href="{{user['website']}}" target="_blank">click</a></div>
+        {%if user['status']=='disabled'%}
+        <div class="col-sm-5" ><h1>This user has been banned.</h1></div>
+        {%endif%}
+        <div class="col-sm-3"><b>User type:</b><p>{{user['user_type']}}</p></div>
       </div>
     </div>
 

@@ -15,7 +15,7 @@
    
     {% if g.user %}
       <li class="nav-item"><span><a>Hello! </a></span></li>
-      <li class="nav-item"><span><img src="{{g.user['pfp']}}" style="width:30px"> </span></li>
+      <li class="nav-item"><span><img src="{{g.user['pfp']}}" style="width:30px;height:30px"> </span></li>
       <li class="nav-item"><span><a href="{{ url_for('index') }}" >{{ g.user['nickname'] }}</a></span></li>
       <li class="nav-item"> <span><a href="https://realtime-chatapp-2283c.web.app/">ChatRoom</span></a></li>
       <li class="nav-item"> <span><a href="{{ url_for('blog.search') }}">Search</a></span></li>

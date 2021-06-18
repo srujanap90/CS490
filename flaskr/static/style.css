@@ -10,8 +10,8 @@ body {
   background: white;
 }
 
-h1, h2, h3, h4, h5, h6 ,p{
-  font-family: serif;
+h1, h2, h3, h4, h5, h6 ,p,li{
+  font-family: sans-serif;
   color: #377ba8;
  
   margin: 1rem 0;
@@ -209,6 +209,7 @@ input[type=submit] {
 }
 
 
+
 .profilebox{
   min-width: 400px;
   margin-top: 1.5rem;
@@ -267,6 +268,17 @@ input[type=submit] {
   transition: height 0.6s ease;
 }
 
+/* banned user */
+.section-gray h2,.section-gray  h3,.section-gray  h4,.section-gray  h5, .section-gray h6 ,.section-gray p,.section-gray  a,.section-gray b,.section-gray small{
+  color: lightgray;
+  margin: 1rem 0;
+}
+.section-gray .progress-bar,.section-gray  .btn-primary,.section-gray  .btn-light{
+  border:none;
+  background-color:lightgray;
+  color: white;
+}
+
 
 
 
@@ -288,14 +300,7 @@ input[type=submit] {
   background-color: rgb(247, 245, 245);
 
 }
-/* api html */
-.flickr{
-  margin:auto;
-  display:block;
-  max-width: 200px;
-  
 
-}
 /* admin page */
 
 
@@ -324,4 +329,7 @@ input[type=submit] {
 .btn-primary{
   border-radius: 10px;
   height:40px;
+}
+.btn-primary a{
+  color:white;
 }

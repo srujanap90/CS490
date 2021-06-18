@@ -22,8 +22,7 @@
         <td>{{post['username']}}</td>
         <td>{{post['nickname']}}</td>
         <td>{{post['user_type']}}</td>
-        <td>{{post['title']}}</td>
-
+        <td><a href="{{ url_for('blog.post', id=post.id,dir=0) }}">{{post['title']}}</a></td>
         <td>{{post['body']}}</td>
         <td>{{post['created']}}</td>
         <td>

@@ -19,7 +19,8 @@
 --   nickname TEXT DEFAULT 'nickname',
 --   About TEXT DEFAULT 'About me',
 --   website TEXT DEFAULT '#',
---   pfp TEXT DEFAULT '#'
+--   pfp TEXT DEFAULT '#',
+--  status VARCHAR DEFAULT 'active'
 -- );
 
 
@@ -66,5 +67,5 @@
 -- ALTER TABLE user ADD nickname TEXT DEFAULT 'nickname';
 
 
-
+-- ALTER TABLE user ADD status VARCHAR DEFAULT 'active';
 

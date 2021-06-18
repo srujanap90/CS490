@@ -17,6 +17,7 @@ from werkzeug.utils import secure_filename
 import os
 from os.path import join, dirname, realpath
 import uuid
+import re #check regex
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -51,6 +52,7 @@ def load_logged_in_user():
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
+    error = ""
     """Register a new user.
 
     Validates that the username is not already taken. Hashes the
@@ -62,10 +64,12 @@ def register():
         useremail = request.form.get("useremail")
 
         db = get_db()
-        error = None
+        
 
         if not username:
             error = "Username is required."
+        elif not re.match(r"^[(0-9)+|(a-zA-Z){8,}]{9,20}$", username):
+            error="Username must be shorter than 20 characters, include at least 8 letters and 1 number, no other special characters "
         elif not password:
             error = "Password is required."
         elif not useremail:
@@ -76,8 +80,13 @@ def register():
             is not None
         ):
             error = f"User {username} is already registered."
+        elif (
+            db.execute("SELECT id FROM user WHERE useremail = ?", (useremail,)).fetchone()
+            is not None
+        ):
+            error = f"Email {useremail} is already registered."
 
-        if error is None:
+        if error =="":
             # the name is available, store it in the database and go to
             # the login page
             db.execute(
@@ -90,18 +99,19 @@ def register():
 
         flash(error)
 
-    return render_template("auth/register.html")
+    return render_template("auth/register.html",error=error)
 
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
+    error = ""
     """Log in a registered user by adding the user id to the session."""
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         time=datetime.now(pytz.timezone('America/New_York'))
         db = get_db()
-        error = None
+        
         user = db.execute(
             "SELECT * FROM user WHERE username = ?", (username,)
         ).fetchone()
@@ -109,8 +119,12 @@ def login():
             error = "Incorrect username."
         elif not check_password_hash(user["password"], password):
             error = "Incorrect password."
+        elif (
+            db.execute("SELECT * FROM user WHERE username = ?", (username,)).fetchone()['status']=='disabled'
+        ):
+            error = f"User {username} is currently banned, please contact admin."
         
-        if error is None:
+        if error =="":
             # store the user id in a new session and return to the index
             session.clear()
             # update login time
@@ -134,7 +148,7 @@ def login():
 
         flash(error)
 
-    return render_template("auth/login.html")
+    return render_template("auth/login.html",error=error)
 
 UPLOAD_FOLDER = './static/upload'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -268,6 +282,8 @@ def logout():
     return redirect(url_for("index"))
 
 
+# ============================================
+# admin part
 @bp.route("/admin")
 @login_required
 def admin():
@@ -340,7 +356,97 @@ def search():
             return render_template("admin/result.html",posts=posts, users=users,word=body,msg=msg)
     return render_template("admin/search.html")
 
+@bp.route("/<int:id>/addmanager", methods=("GET", "POST"))
+@login_required
+def addmanager(id):
+    db=get_db()
+    db.execute(
+            "UPDATE user SET user_type='manager' WHERE id=? ",(id,),
+        )
+    db.commit()
+    return redirect(url_for('auth.adminusers'))
 
+@bp.route("/<int:id>/removemanage", methods=("GET", "POST"))
+@login_required
+def removemanager(id):
+    db=get_db()
+    db.execute(
+            "UPDATE user SET user_type='user' WHERE id=? ",(id,),
+        )
+    db.commit()
+    return redirect(url_for('auth.adminusers'))
+
+
+@bp.route("/<int:id>/disableuser", methods=("GET", "POST"))
+@login_required
+def disableuser(id):
+    if request.method =="POST":
+        db=get_db()
+        db.execute(
+                "UPDATE user SET status='disabled' WHERE id=? ",(id,),
+            )
+        db.commit()
+        
+    return redirect(url_for('auth.adminusers'))
+
+@bp.route("/<int:id>/activeuser", methods=("GET", "POST"))
+@login_required
+def activeuser(id):
+    if request.method =="POST":
+        db=get_db()
+        db.execute(
+                "UPDATE user SET status='active' WHERE id=? ",(id,),
+            )
+        db.commit()
+        
+    return redirect(url_for('auth.adminusers'))
+
+@bp.route("/adduser", methods=("GET", "POST"))
+@login_required
+def adduser():
+    error = ""
+    if request.method =="POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        useremail = request.form.get("useremail")
+        user_type = request.form.get("user_type")
+        if user_type is None:
+            user_type='user'
+        db = get_db()
+        
+
+        if not username:
+            error = "Username is required."
+        elif not re.match(r"^[(0-9)+|(a-zA-Z){8,}]{9,20}$", username):
+            error="Username must be shorter than 20 characters, include at least 8 letters and 1 number, no other special characters "
+       
+        elif not password:
+            error = "Password is required."
+        elif not useremail:
+            error = "Email is required."
+        
+        elif (
+            db.execute("SELECT id FROM user WHERE username = ?", (username,)).fetchone()
+            is not None
+        ):
+            error = f"User {username} is already registered."
+        elif (
+            db.execute("SELECT id FROM user WHERE useremail = ?", (useremail,)).fetchone()
+            is not None
+        ):
+            error = f"Email {useremail} is already registered."
+
+        if error =="":
+            # the name is available, store it in the database and go to
+            # the login page
+            db.execute(
+                "INSERT INTO user (username, password,useremail,user_type) VALUES (?, ?,?,?)",
+              
+                (username, generate_password_hash(password),useremail,user_type,)
+            )
+            db.commit()
+            return redirect(url_for('auth.adminusers'))
+    return render_template('admin/adduser.html',error=error)
 
 
 
@@ -377,7 +483,7 @@ def deleteuser(id):
                 "DELETE FROM likes WHERE user_id=? ",(id,),
             )
         db.execute(
-                "DELETE FROM ranks WHERE id=? ",(id,),
+                "DELETE FROM ranks WHERE user_id=? ",(id,),
             )
         db.execute(
                 "DELETE FROM follow WHERE user_id=? ",(id,),
@@ -388,3 +494,6 @@ def deleteuser(id):
         db.commit()
         
     return redirect(url_for('auth.adminusers'))
+
+
+    # =========================================
