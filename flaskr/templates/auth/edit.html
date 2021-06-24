@@ -5,18 +5,27 @@
 {% endblock %}
 
 {% block content %}
-  <form method="post" enctype="multipart/form-data">
-    <label for="nikcname">New Nickname:</label>
-    <input name="nickname" id="nickname" value="{{ request.form['nickname'] or g.user['nickname'] }}" placeholder="pick a nice nickname">
-    <label for="pfp">Upload profile pic: (only 'png', 'jpg', 'jpeg', 'gif' allowed)</label>
-    <input type=file name="file" id="file" >
-    <label for="website">Website:</label>
-    <input name="website" id="website" value="{{ request.form['website'] or g.user['website'] }}" placeholder="Personal Website">
-    <label for="aboutme">About me:</label>
-    <input name="aboutme" id="aboutme" value="{{ request.form['aboutme'] or g.user['About'] }}" placeholder="Say Something About Yourself">
-    <input type="submit" value="Save Changes">
-  </form>
-  <hr>
 
-  <a href="{{ url_for('blog.index') }}">Cancel</a>
+<form class="edit" method="post" enctype="multipart/form-data">
+    <label class="edit-label" for="nikcname">New Nickname:</label>
+    <input class="edit-input" name="nickname" id="nickname" value="{{ request.form['nickname'] or g.user['nickname'] }}" placeholder="Enter a nickname">
+    <br>
+
+    <label class="edit-label" for="pfp">Upload profile pic: (only 'png', 'jpg', 'jpeg', 'gif' allowed)</label>
+    <input class="edit-upload" type=file name="file" id="file" >
+    <br>
+
+    <label class="edit-label" for="website">Website:</label>
+    <input class="edit-input" name="website" id="website" value="{{ request.form['website'] or g.user['website'] }}" placeholder="Personal Website">
+    <br>
+
+    <label class="edit-label" for="aboutme">About me:</label>
+    <input class="edit-input" name="aboutme" id="aboutme" value="{{ request.form['aboutme'] or g.user['About'] }}" placeholder="Say Something About Yourself">
+    <br>
+
+    <input class="edit-btn" type="submit" value="Save Changes">
+</form>
+
+<a class="edit-cancel" href="{{ url_for('blog.index') }}">Cancel</a>
+
 {% endblock %}

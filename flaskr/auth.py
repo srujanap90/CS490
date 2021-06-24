@@ -68,8 +68,8 @@ def register():
 
         if not username:
             error = "Username is required."
-        elif not re.match(r"^[(0-9)+|(a-zA-Z){8,}]{9,20}$", username):
-            error="Username must be shorter than 20 characters, include at least 8 letters and 1 number, no other special characters "
+        elif not re.match(r"^[(0-9)+|(a-zA-Z){4,}]{5,20}$", username):
+            error="Username must be shorter than 20 characters, include at least 4 letters and 1 number, no other special characters "
         elif not password:
             error = "Password is required."
         elif not useremail:
@@ -417,8 +417,8 @@ def adduser():
 
         if not username:
             error = "Username is required."
-        elif not re.match(r"^[(0-9)+|(a-zA-Z){8,}]{9,20}$", username):
-            error="Username must be shorter than 20 characters, include at least 8 letters and 1 number, no other special characters "
+        elif not re.match(r"^[(0-9)+|(a-zA-Z){4,}]{5,20}$", username):
+            error="Username must be shorter than 20 characters, include at least 4 letters and 1 number, no other special characters "
        
         elif not password:
             error = "Password is required."

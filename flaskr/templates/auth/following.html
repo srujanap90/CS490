@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %} {{follows[0]['nickname']}} is following:  {% endblock %}</h1>
+<h2 class="follow-name">{% block title %} {{follows[0]['nickname']}} is following:  {% endblock %}</h2>
 {% endblock %}
 
 {% block content %}
-<ul>
-{% for follow in follows %}
-<li><a href="{{url_for('blog.profile',id=follow['follows_id'])}}">{{follow['nickname']}}</a></li>
-
-{%endfor%}
-</ul>
+	<ul>
+		{% for follow in follows %}
+		<li class="follow-li">
+			<a class="follow-list" href="{{url_for('blog.profile',id=follow['follows_id'])}}">{{follow['nickname']}}</a>
+		</li>
+		{%endfor%}
+	</ul>
 {% endblock %}
+

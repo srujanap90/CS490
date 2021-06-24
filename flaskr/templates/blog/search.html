@@ -6,16 +6,19 @@
 
 {% block content %}
 
-<div class="container-fluid search" >
-  <h1 style="text-align: center;">{% block title %}Search for: {% endblock %}</h1>
-  <form method="post" style="margin:auto;align-items: center;">
-    <input name="searchbody" id="searchbody" value="{{ request.form['searchbody'] }}" required>
-    <input type="submit" value="search" class="btn btn-light" >
-    <a href="{{ url_for('blog.posts', offset=0) }}">Cancel</a>
-  </form>
-</div>
+	<div class="search-container" >
+		<h1 class="search-title">{% block title %}Search for: {% endblock %}</h1>
 
+		<div class="search-form-div">
+			<form method="post" class="search-form">
+				<input class="search-input" name="searchbody" id="searchbody" value="{{ request.form['searchbody'] }}" required autofocus>
+				<br>
+				<input type="submit" value="Search" class="btn" >
+			</form>
+			
+			<a class="search-cancel" href="{{ url_for('blog.posts', offset=0) }}">Cancel</a>
 
-
+		</div>
+	</div>
 
 {% endblock %}

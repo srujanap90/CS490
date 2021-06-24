@@ -9,7 +9,7 @@
 {%if user['status']=='disabled'%}
 <div class="section-gray profilepage"> 
   {%else%}
-<div class="section profilepage"> 
+<div class=" profilepage"> 
   {%endif%}
   {% if user %}
     <div class="container-fluid profilebox">
@@ -75,7 +75,7 @@
     <div class="card-group" id="userposts">
       {% for post in posts %}
      
-      <div class="card postcard" id="#postcard" >
+      <div class=" postcard1" id="#postcard" >
         {%if post['img_url'] %}
               <a href="{{ url_for('blog.post', id=post.id,dir=0) }}"><img src="{{ post['img_url'] }} "  class="card-img-top" alt="the image from post {{ post['title'] }} "></a>
               {%else%}

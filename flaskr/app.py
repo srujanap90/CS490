@@ -21,6 +21,11 @@ from flaskr import db
 db.init_app(app)
 
 # apply the blueprints to the app
+# from flaskr import auth, blog
+
+# app.register_blueprint(auth.bp)
+# app.register_blueprint(blog.bp)
+
 from flaskr import auth, blog
 
 app.register_blueprint(auth.bp)
@@ -36,5 +41,5 @@ app.add_url_rule("/", endpoint="index")
 
 
 
-if __name__ == '__main__':
-    app.run(debug=True) 
+# if __name__ == '__main__':
+#     app.run(debug=True) 

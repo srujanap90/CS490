@@ -68,7 +68,9 @@ Description:
         ----
         
         ::
-            $pip3 freeze > requirements.txt
+            $ pip3 freeze > requirements.txt
+            manually add Blueprint to requirements: Flask-Blueprint==1.3.0
+            delete the path comment 
 Platform: UNKNOWN
 Description-Content-Type: text/x-rst
 Provides-Extra: test

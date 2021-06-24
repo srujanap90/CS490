@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Tangerine&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+
+.title {
+    font-family: 'Tangerine', cursive;
+    font-size: 7rem;
+    text-align: center;
+    margin: 1rem;
+    color: #235842;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-evenly;
+    font-family: 'Quicksand', sans-serif;
+    background-color: #d8f3dc;
+    padding: 0.7rem;
+}
+
+.item {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #40916c;
+}
+
+.item:hover {
+    color: #2d6a4f;
+}
+
+
+/* LOGIN & REGISTER */
+
+.login-title,
+.register-title {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem;
+    color: #235842;
+    text-align: center;
+}
+
+.error {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.3rem;
+    margin: 1.5rem;
+    color: red;
+    text-align: center;
+}
+
+.form {
+    text-align: center;
+}
+
+.input {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1rem;
+    margin: 0.4rem;
+    padding: 5px 7px;
+    outline: none; border: none;
+    border-radius: 5px;
+}
+
+.input:focus {
+    box-shadow: 0 0 0 2px rgba(116, 198, 157, 0.6);
+}
+
+.btn {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    margin: 0.7rem;
+    padding: 4px 8px;
+    cursor: pointer;
+    background: #52B788;
+    color: white;
+    outline: none; border: none;
+    border-radius: 10px;;
+}
+
+.btn:hover {
+    background: #52b788ce;
+}
+
+/* EDIT (edit.html) */
+
+.edit {
+    margin-bottom: 1rem;
+}
+
+.edit-title {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem;
+    color: #235842;
+    text-align: center;
+}
+
+.edit-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #40916C;
+    margin-left: 1rem;
+}
+
+.edit-input {
+    font-family: 'Quicksand', sans-serif;
+    width: 90%;
+    padding: 8px 7px;
+    border-radius: 10px;
+    outline: none; border: none;
+    margin-bottom: 1rem;
+}
+
+.edit-upload {
+    font-family: 'Quicksand', sans-serif;
+    margin-bottom: 1rem;
+    width: 13%;
+}
+
+.edit-btn {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    margin-left: 42rem;
+    padding: 4px 8px;
+    cursor: pointer;
+    background: #52B788;
+    color: white;
+    outline: none; border: none;
+    border-radius: 10px;
+}
+
+.edit-btn:hover {
+    background: #52b788ce;
+}
+
+.edit-cancel {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #0d3024;
+    margin-left: 44.3rem;
+}
+
+.edit-cancel:hover {
+    color: #ff0000;
+}
+
+
+/* FOLLOWERS/FOLLOWING followers.html/following.html */
+.follow-name {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.6rem;
+    margin: 3% auto 0;
+    color: #2D6A4F;
+}
+
+.follow-li {
+    list-style-type:disc;
+    list-style-position: inside;
+    margin-left: 2rem;
+    color: #235842;
+}
+
+.follow-list {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #52B788;
+}

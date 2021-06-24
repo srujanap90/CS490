@@ -1,20 +1,19 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1 style="text-align: center;">{% block title %}Register{% endblock %}</h1>
+	<h1 class="register-title">{% block title %}REGISTER{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<h3>{{error}}</h3>
-  <form method="post" style="margin:auto;align-items: center;">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
-
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-
-    <label for="useremail">Email</label>
-    <input type="email" name="useremail" required>
-    <input type="submit" value="Register" class="btn btn-primary">
-  </form>
+	<h3 class="error">{{error}}</h3>
+	<form class="form" method="post">
+		<input class="input" name="username" id="username" placeholder="Username" required>
+		<br>
+		<input class="input" type="password" name="password" id="password" placeholder="Password" required>
+		<br>
+		<input class="input" type="email" name="useremail" placeholder="Email" required>
+		<br>
+		<input type="submit" value="Register" class="btn">
+	</form>
 {% endblock %}
+

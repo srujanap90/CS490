@@ -58,7 +58,7 @@
 -- CREATE TABLE ranks (
 --         user_id INTEGER,
 --         rank float,
---         points INTERGER default 1 )
+--         points INTERGER default 1 );
 
 -- DELETE FROM user;
 -- INSERT INTO user(id,username,password,useremail,user_type) VALUES (1,'admin','admin','admin@heroku.com','admin');
@@ -67,5 +67,18 @@
 -- ALTER TABLE user ADD nickname TEXT DEFAULT 'nickname';
 
 
--- ALTER TABLE user ADD status VARCHAR DEFAULT 'active';
-
+-- CREATE TABLE friendlist(
+--   user_id INTEGER NOT NULL,
+--   follows_id INTEGER NOT NULL,
+--   friendrequest VARCHAR NOT NULL DEFAULT 'unsend',
+--   friendship VARCHAR NOT NULL DEFAULT 'notfriend',
+--   friend_since TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+-- );
+-- CREATE TABLE messages(
+--     id INTEGER PRIMARY KEY AUTOINCREMENT,
+--     sender_id INTEGER NOT NULL,
+--     receiver_id INTEGER NOT NULL,
+--     msg TEXT NOT NULL,
+--     read_status VARCHAR DEFAULT 'unread',
+--     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+-- );

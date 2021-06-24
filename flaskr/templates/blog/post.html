@@ -1,59 +1,71 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<table style="width: 100%;">
-  <tr>
-  <td>
-    <h1><a href="{{url_for('blog.post',id =post['id'],dir=0)}}">{% block title %}Post | {{post ['title']}}{% endblock %}</a></h1>
-  </td>
-  <td style="text-align: left;"><a href="{{ url_for('blog.post', id=post['id']-1,dir=2)}}">previous post</a> | <a href="{{ url_for('blog.post', id=post['id']+1,dir=1 )}}">next post</a></td>
-  <td style="text-align: right;"> 
-    <a href="{{url_for('blog.posts',offset=0)}}">Back to posts</a>
-  </td>
-</tr>
+<table class="post-table">
+    <tr>
+    <td>
+        <h1 class="post-title">Post |
+            <a class="post-heading" href="{{url_for('blog.post',id =post['id'],dir=0)}}"><span>{% block title %}{{post ['title']}}{% endblock %}</span></a>
+        </h1>
+    </td>
+
+    <td>
+        <a class="post-prev" href="{{ url_for('blog.post', id=post['id']-1,dir=2)}}">Prev</a> | 
+        <a class="post-next" href="{{ url_for('blog.post', id=post['id']+1,dir=1 )}}">Next</a>
+    </td>
+
+    <td> 
+        <a class="" href="{{url_for('blog.posts',offset=0)}}">Back to posts</a>
+    </td>
+    
+    </tr>
 </table>
 
 
 {% endblock %}
 
-  {% block content %}
+{% block content %}
   
     
     <article class="post">
-      <header>
-        <table style="width :100%">
-          <tr>
-          <td>
-            <div class="about"><img src="{{post['pfp']}}"style="width:50px; height:50px;"> by <a href="{{url_for('blog.profile',id=post['author_id'])}}">{{ post['nickname'] }} </a>on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
-          </td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td>&nbsp;</td>
-          <td style="text-align: right;">
-            <h5>likes: {{likes|length}}</h5>   
-          </td>
-          <td style="text-align: right;">
-            {% if liked %}
-            <form method="post" action="{{url_for('blog.unlike',id=post['id'])}}">
-              <button class="btn btn-light" style="background-color: red; color:white;border: 1px solid white;"id="unlikebtn" ><span>liked</span></button>
-            </form>
-            {%else%}
-              <form method="post" action="{{url_for('blog.like',id=post['id'])}}">
-                <button class="btn btn-light" id="likebtn" >like</button>
-              </form>
-            {% endif %}
-          </td>
-          
-          <td>
-            {% if g.user['id'] == post['author_id'] %}
-            <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
-            {% endif %}
-            
-          </td>
-        </tr>
-        </table>
-      </header>
+        <header>
+            <table style="width :100%">
+            <tr>
+                <td>
+                    <div class="about">
+                        <img src="{{post['pfp']}}"style="width:50px; height:50px;"> by 
+                        <a href="{{url_for('blog.profile',id=post['author_id'])}}">
+                            {{ post['nickname'] }} 
+                        </a>
+                        on {{ post['created'].strftime('%Y-%m-%d-%H:%M:%S') }}
+                    </div>
+                    
+                </td>
+
+                <td style="text-align: right;">
+                    <h5>Likes: {{likes|length}}</h5>   
+                </td>
+                <td style="text-align: right;">
+                    {% if liked %}
+                    <form method="post" action="{{url_for('blog.unlike',id=post['id'])}}">
+                        <button class="btn"><span>liked</span></button>
+                    </form>
+                    {%else%}
+                    <form method="post" action="{{url_for('blog.like',id=post['id'])}}">
+                        <button class="btn" id="likebtn">Like</button>
+                    </form>
+                    {% endif %}
+                </td>
+                
+                <td>
+                    {% if g.user['id'] == post['author_id'] %}
+                    <a class="action" href="{{ url_for('blog.update', id=post['id']) }}">Edit</a>
+                    {% endif %}
+                    
+                </td>
+            </tr>
+            </table>
+        </header>
 
         {%if post['img_url'] %}
         <img src="{{post['img_url']}}" class="post-image"  alt="the image from post {{ post['title'] }} ">
@@ -63,21 +75,19 @@
     
         {%if post['body']%}
         <p class="body">{{ post['body'] }}</p>
-        <hr>
         {%endif%}
       </article>
      <table style="width: 100%;">
-       <tr style="text-align: right;">
+       <tr style="text-align: left;">
         <td style="align-items: center;"> <!-- comment section -->
-          <BUTTON ONCLICK="ShowAndHide()" class="btn btn-light">Leave Your Comment</BUTTON> 
+          <BUTTON ONCLICK="ShowAndHide()" class="btn">Leave Your Comment</BUTTON> 
           <DIV ID="commentbox" STYLE="display:none"> 
-            <hr>
             <form action="{{ url_for('blog.comment', id=post['id'],user=g.user['id']) }}" method="post">
-              <textarea name="commentbody" id="body" autofocus>{{ request.form['commentbody'] }}</textarea>
+              <textarea class="post-textbox" rows="10" cols="60" name="commentbody" id="body" autofocus>{{ request.form['commentbody'] }}</textarea>
               <div class="row">
                 <div class="col-sm-8">   </div>
-                <div class="col-sm-2"><input type="submit" class="btn btn-light" value="Save"></div>
-                <div class="col-sm-2"><a href="{{url_for('blog.post',id =post['id'],dir=0)}}"  class="btn btn-light">Cancel</a></div>
+                <div class="col-sm-2"><input type="submit" class="btn" value="Save"></div>
+                <div class="col-sm-2"><a href="{{url_for('blog.post',id =post['id'],dir=0)}}"  class="btn">Cancel</a></div>
               </div>
             </form>
             </DIV>
@@ -89,17 +99,15 @@
      </table>
       
       <br>
-
-
      
       <!-- display post comment -->
             
       <article class="comment" ID="commentthread">
         <header>
-          <h5>comments</h5>
           <hr>
           {% if comments != None %}
             {%for comment in comments %}
+          <h5 style="margin-bottom: 1rem; margin-top: 1rem;">Comments</h5>
             <div class="commentheader"> <b><a href="{{url_for('blog.profile',id=comment['author_id'])}}"> {{ comment['nickname'] }} </a>said: </b></div>
             <br>
             </header>
@@ -118,22 +126,21 @@
               <div class="commentend">on {{ comment['created'].strftime('%Y-%m-%d-%H:%M:%S') }}</div>
               <!-- edit buton -->
               {% if g.user['id'] == comment['author_id'] %}
-                <BUTTON ONCLICK="ShowAndHide1({{comment['id']}})" class="btn btn-light" style="max-width: fit-content;">edit</BUTTON>
+                <BUTTON ONCLICK="ShowAndHide1({{comment['id']}})" class="btn" style="max-width: fit-content;">Edit</BUTTON>
                   <DIV ID="commentboxedit{{comment['id']}}" STYLE="display:none">
-                    <hr>
                     <form action="{{ url_for('blog.commentupdate', id=post['id'],user=g.user['id'],cid=comment['id']) }}" method="post">
-                      <textarea name="commentbodyup" id="body" autofocus>{{ comment['body'] or request.form['commentbodyup'] }}</textarea>
-                      <input type="submit" value="Save" class="btn btn-light"style="max-width: fit-content;">
+                      <textarea class="post-textbox" rows="10" cols="60" name="commentbodyup" id="body" autofocus>{{ comment['body'] or request.form['commentbodyup'] }}</textarea>
+                      <input type="submit" value="Save" class="btn"style="max-width: fit-content;">
                         </form>
                       <div class="row">
                         <div class="col-sm-2">
                         <form action="{{ url_for('blog.commentdelete', id=post['id'],cid=comment['id']) }}" method="post">
-                          <input class="danger btn btn-light" type="submit" value="Delete" onclick="return confirm('Are you sure?');" style="max-width: fit-content;">
+                          <input class="btn" type="submit" value="Delete" onclick="return confirm('Are you sure?');" style="max-width: fit-content;">
                         </form>
                           </div>
                         <div class="col-sm-2">
                           <form >
-                            <a href="{{url_for('blog.post',id =post['id'],dir=0)}}" class="btn btn-light"style="max-width: fit-content;">Cancel</a>
+                            <a href="{{url_for('blog.post',id =post['id'],dir=0)}}" class="btn"style="max-width: fit-content;">Cancel</a>
                           </form>
                           
                           </div>
@@ -142,20 +149,20 @@
               {% endif %} 
               
                 <!-- retweet -->
-              <BUTTON ONCLICK="ShowAndHide2({{comment['id']}})" class="btn btn-light">reply</BUTTON>
+              <BUTTON ONCLICK="ShowAndHide2({{comment['id']}})" class="btn">Reply</BUTTON>
                   <DIV ID="commentboxretweet{{comment['id']}}" STYLE="display:none">
                     <hr>
                     <p><i>{{g.user['nickname']}} said: {{comment['body']}}</i></p>
                     <hr>
                     <form action="{{ url_for('blog.commentretweet', id=post['id'],user=g.user['id'],rid=comment['id']) }}" method="post">
-                      <textarea name="commentboxretweet" id="body" autofocus>{{ request.form['commentboxretweet'] }}</textarea>
-                          <input type="submit" value="Save" class="btn btn-light" style="max-width: fit-content;">
+                      <textarea class="post-textbox" rows="10" cols="60" name="commentboxretweet" id="body" autofocus>{{ request.form['commentboxretweet'] }}</textarea>
+                          <input type="submit" value="Save" class="btn" style="max-width: fit-content;">
                     </form>
-                    <a href="{{url_for('blog.post',id =post['id'],dir=0)}}" class="btn btn-light"  style="max-width: fit-content;">Cancel</a>
+                    <a href="{{url_for('blog.post',id =post['id'],dir=0)}}" class="btn"  style="max-width: fit-content;">Cancel</a>
                     </DIV>
               {% if g.user['user_type'] == 'admin' or g.user['user_type']=='manager' %}
                 <form action="{{ url_for('blog.admincommentdelete', id=post['id'],cid=comment['id']) }}" method="post" style="max-width:fit-content">
-                  <input class=" btn btn-secondary" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+                  <input class="btn" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
                 </form>
               {% endif %}
                     
@@ -166,7 +173,7 @@
           {%endif%}
       </article>
   <!-- hidden comment box -->
-  <SCRIPT>
+  <script>
     function ShowAndHide() {
         var x = document.getElementById('commentbox');
         if (x.style.display == 'none') {
@@ -192,7 +199,7 @@
         }
     }
     
-    </SCRIPT>
+    </script>
 
 
 

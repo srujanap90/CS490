@@ -2,11 +2,11 @@
 
 
 {% block content %}
-
-<div class="container-fluid search" >
-  <form method="post" style="margin:auto;align-items: center;">
-    <input name="searchbody" id="searchbody" value="{{ request.form['searchbody'] }}" required>
-    <input type="submit" value="search" class="btn btn-light" >
+<h1 class="search-title">Search</h1>
+<div class="search" >
+  <form class="search-form" method="post" >
+    <input class="search-input" name="searchbody" id="searchbody" value="{{ request.form['searchbody'] }}" required>
+    <input type="submit" value="Search" class="search-btn" >
   </form>
 </div>
 

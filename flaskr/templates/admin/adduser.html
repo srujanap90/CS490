@@ -1,34 +1,38 @@
 {% extends 'admin/base.html' %}
 
 {% block header %}
-<h1 style="text-align: center;">{% block title %}Add User{% endblock %}</h1>
-
+<h1 class="adduser-title">{% block title %}Add User{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+<h1 class="adduser-title">Add User</h1>
+
 <h3>{{error}}</h3>
-  <form method="post" style="margin:auto;align-items: center;">
-    <label for="username">Username</label>
-    <input name="username" id="username" required>
+<form class="adduser-form" method="post">
+    <label class="adduser-label" for="username">Username</label>
+    <input class="adduser-input" name="username" id="username" required>
+    <br>
 
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
+    <label class="adduser-label" for="password">Password</label>
+    <input class="adduser-input" type="password" name="password" id="password" required>
+    <br>
 
-    <label for="useremail">Email</label>
-    <input type="email" name="useremail" required>
+    <label class="adduser-label" for="useremail">Email</label>
+    <input class="adduser-input" type="email" name="useremail" required>
+    <br>
 
-    <label for="user_type">User_type</label>
-    <select id="user_type" name="user_type" size="4"  data-placeholder="Choose from..." multiple >
+    <label class="adduser-label" for="user_type">User_type</label>
+    <select class="adduser-select" id="user_type" name="user_type" size="4"  data-placeholder="Choose from..." multiple >
         <option value="user">user</option>
         <option value="manager">manager</option>
         <option value="admin">admin</option>
-      </select>
+    </select>
+    <br>
+    <input type="submit" value="Add" class="btn adduser-btn">
+</form>
 
-    <input type="submit" value="Add" class="btn btn-primary">
-  </form>
 
-
-  <script>
+<script>
     $(".chosen-select").chosen({
   no_results_text: "Oops, nothing found!"
 })
