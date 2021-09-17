@@ -14,10 +14,14 @@ flaskr.egg-info/dependency_links.txt
 flaskr.egg-info/requires.txt
 flaskr.egg-info/top_level.txt
 flaskr/static/.DS_Store
+flaskr/static/admin.css
 flaskr/static/apiscript.js
 flaskr/static/apistyle.css
+flaskr/static/base.css
+flaskr/static/style-v1.css
 flaskr/static/style.css
 flaskr/static/img/.DS_Store
+flaskr/static/img/camera.jpg
 flaskr/static/img/icon.png
 flaskr/static/upload/.DS_Store
 flaskr/static/upload/pfp/2-fc31b16e-a832-42b9-85a8-3ec3b2c8b1f74-a1e2986c-29f4-498a-b81e-936e31d2f3d6-2021-06-17_001037.663876-04007.jpg
@@ -36,6 +40,7 @@ flaskr/static/upload/post/4-e14e18a1-d7ab-459d-9d08-a9c447032a839762093.jpg
 flaskr/static/upload/post/5-c63ad7ca-274e-471a-8343-6bf85289e586-2021-06-14_013859.774540-0400ZfTBjyr.jpeg
 flaskr/static/upload/post/6-7f29141f-67b3-4765-9c0d-d00d0e066230-2021-06-17_001519.334560-0400img.jpg
 flaskr/templates/.DS_Store
+flaskr/templates/base-v1.html
 flaskr/templates/base.html
 flaskr/templates/API/index.html
 flaskr/templates/admin/adduser.html
@@ -50,6 +55,11 @@ flaskr/templates/auth/followers.html
 flaskr/templates/auth/following.html
 flaskr/templates/auth/login.html
 flaskr/templates/auth/register.html
+flaskr/templates/auth-v1/edit.html
+flaskr/templates/auth-v1/followers.html
+flaskr/templates/auth-v1/following.html
+flaskr/templates/auth-v1/login.html
+flaskr/templates/auth-v1/register.html
 flaskr/templates/blog/create.html
 flaskr/templates/blog/index.html
 flaskr/templates/blog/nopost.html

@@ -12,33 +12,35 @@
 		
 		{% if g.user %}
 			<li>
-				<a class="item" href="{{url_for('blog.api')}}">Inspiration</a>
+				<a class="item" href="{{url_for('blog.api')}}" target="_blank">Inspiration</a>
 			</li>
 
 			<li>
 				<a class="item" href="{{url_for('blog.posts',offset=0)}}">Explore</a>
 			</li>
 
-			<li>
+			<!-- <li>
 				<a class="item-nickname" href="{{ url_for('index') }}" >{{ g.user['nickname'] }}</a>
-			</li>
+			</li> -->
 
-			<li>
+			<!-- <li>
 				<a class="item" href="https://realtime-chatapp-2283c.web.app/">ChatRoom</a>
-			</li>
+			</li> -->
+			
 			<li>
 				<a class="item" href="{{ url_for('blog.search') }}">Search</a>
 			</li>
+			
 			<li>
 				<a class="item" href="{{ url_for('auth.logout') }}">Logout</a>
 			</li>
 
 		{% else %}
 			<li>
-				<a class="item" href="{{ url_for('auth.register') }}">Register</a>
+				<a class="item" href="{{ url_for('auth.register') }}">REGISTER</a>
 			</li>
 			<li>
-				<a class="item" href="{{ url_for('auth.login') }}">Login</a>
+				<a class="item" href="{{ url_for('auth.login') }}">LOGIN</a>
 			</li>
 
 		{% endif %}

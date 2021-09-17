@@ -10,34 +10,35 @@
     font-family: 'Quicksand', sans-serif;
 }
 
-
-
 html {
-    background-image: url("./img/camera.jpg");
+    /* background-image: url("./img/camera.jpg");
     background-color:rgba(212, 233, 221, 0.8);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     background-attachment: fixed;
     min-height: 100%;
-    background-blend-mode: lighten;
+    background-blend-mode: lighten; */
+
+    background-color: #e6ebff;
 }
 
 .title {
     font-family: 'Tangerine', cursive;
     font-size: 8rem;
+    font-weight: bold;
     text-align: center;
-    margin: 1rem;
-    color: #09e68a;
+    margin: 10px;
+    color: #235842;
 }
 
 .nav {
     display: flex;
     justify-content: space-evenly;
     font-family: 'Quicksand', sans-serif;
-    background-color: #adffb9;
-    padding: 0.7rem;
-    border-radius: 20px;
+    background-color: #ffffff;
+    padding: 10px 0;
+    border-radius: 10px;
 }
 
 .item {
@@ -71,7 +72,7 @@ html {
     font-family: 'Quicksand', sans-serif;
     font-size: 2rem;
     font-weight: 700;
-    margin: 2rem;
+    margin: 1.5rem;
     color: #33bf85;
     text-align: center;
 }
@@ -272,6 +273,7 @@ a:hover{
 h5 {
     font-family: 'Quicksand', sans-serif;
     font-size: 1.4rem;
+    font-weight: bold;
     margin-right: 5rem;
     color: #008000;
 }
@@ -287,12 +289,11 @@ h5 {
 }
 
 .posts p {
-    color: #74f3b8;
+    color: #0b730b;
     font-size: 1rem;
     font-weight: bold;
     text-decoration: none;
 }
-
 
 .follow {
     margin-right: 2rem;
@@ -423,7 +424,7 @@ h5 {
 .results {
     font-size: 1.4rem;
     margin-top: 2rem;
-    color: white;
+    color: #33bf85;
 }
 
 .results span { 
@@ -617,7 +618,7 @@ body{
     width: 100%;
     height: 0;
     /* background-color: #377ba8; */
-    background-color: #red;
+    background-color: red;
     -webkit-transition: height 0.6s ease;
     -o-transition: height 0.6s ease;
     transition: height 0.6s ease;

@@ -7,7 +7,7 @@
     font-family: 'Comfortaa', sans-serif;
 }
 body {
-    background: #eeeeee;
+    background: #e6ebff;
 }
 
 .container {
@@ -21,7 +21,7 @@ form {
     margin-bottom: 3rem;
 }
 .title {
-    color: #227c9d;
+    color: #40916c;
     font-size: 3.2rem;
 }
 
@@ -44,13 +44,13 @@ form {
     width: 70px;
     height: 35px;
     color: white;
-    background: #1b998b;
+    background: #0b6531;
     border-radius: 10px;
     cursor: pointer;
 }
 
 .btn:hover {
-    background: #1b998b;
+    background: #0b6530e3;
 }
 
 .images { 
